@@ -1,1 +1,1 @@
-module.exports.BASE_URL="http://sportsfetefantasy.live/api/"
+module.exports.BASE_URL="http://localhost:6001/"

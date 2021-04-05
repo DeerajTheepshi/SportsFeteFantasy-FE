@@ -8,6 +8,7 @@ export default makeStyles(theme => ({
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
+    background: "url('/genericWhite.jpg')",
     top: 0,
     left: 0,
   },
@@ -27,13 +28,13 @@ export default makeStyles(theme => ({
     },
   },
   logotypeImage: {
-    width: 165,
-    marginBottom: theme.spacing(4),
+    transform: "scale(0.25)",
+    marginTop: "-400px",
   },
   logotypeText: {
     color: "white",
     fontWeight: 500,
-    fontSize: 84,
+    fontSize: 30,
     [theme.breakpoints.down("md")]: {
       fontSize: 48,
     },
@@ -51,6 +52,7 @@ export default makeStyles(theme => ({
   },
   form: {
     width: 320,
+    marginTop: "-200px",
   },
   tab: {
     fontWeight: 400,

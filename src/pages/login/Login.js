@@ -9,7 +9,7 @@ import {
   TextField,
   Fade,
 } from "@material-ui/core";
-import { withRouter } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import classnames from "classnames";
 
 // styles
@@ -29,6 +29,7 @@ import { useHistory } from "react-router-dom";
 function Login(props) {
   var classes = useStyles();
 
+
   // global
 
   // local
@@ -41,7 +42,7 @@ function Login(props) {
   var [rollValue, setRollValue] = useState("");
   var [contactValue, setContactValue] = useState("");
   var [errorMessage, setErrorMessage] = useState('');
-  const history = useHistory();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -56,11 +57,13 @@ function Login(props) {
       }
       localStorage.setItem("session", user.session);
       setIsLoading(false);
-      history.push("/app");
+      setIsLoggedIn(true);
+      window.location.href = "/";
     } catch (e) {
       setError(true);
       setErrorMessage("Something Went Wrong");
       setIsLoading(false);
+      setIsLoggedIn(false);
     }
   };
 
@@ -79,15 +82,12 @@ function Login(props) {
       setErrorMessage("Something Went Wrong");
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Grid container className={classes.container}>
-      <div className={classes.logotypeContainer}>
-        <img src={logo} alt="logo" className={classes.logotypeImage} />
-        <Typography className={classes.logotypeText}>Material Admin</Typography>
-      </div>
       <div className={classes.formContainer}>
+        <img src={"/sportsfetelogo.png"} alt={"logo"} className={classes.logotypeImage}/>
         <div className={classes.form}>
           <Tabs
             value={activeTabId}
@@ -150,6 +150,7 @@ function Login(props) {
                     variant="contained"
                     color="primary"
                     size="large"
+                    fullWidth
                   >
                     Login
                   </Button>
@@ -159,9 +160,6 @@ function Login(props) {
           )}
           {activeTabId === 1 && (
             <React.Fragment>
-              <Typography variant="h2" className={classes.subGreeting}>
-                Register
-              </Typography>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
                   {errorMessage}
@@ -273,4 +271,4 @@ function Login(props) {
   );
 }
 
-export default Login;
+export default withRouter(Login);

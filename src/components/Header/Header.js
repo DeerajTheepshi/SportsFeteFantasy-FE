@@ -148,7 +148,7 @@ export default function Header(props) {
             color="white"
             onClick={() => {
               localStorage.setItem("session", undefined);
-              history.push("/login");
+              window.location.href = "/";
             }}
           >
             Sign Out

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect, useHistory } from "react-router-dom";
 
 // components
 import Layout from "./Layout";
@@ -18,6 +18,7 @@ export default function App() {
   var [isAuthenticated, setIsAuthenticated] = useState(false);
   var [userData, setUserData] = useState({});
   var [isLoading, setIsLoading] = useState(true);
+  const history = useHistory();
 
   const getSession = async () => {
     let res = undefined;
@@ -42,9 +43,10 @@ export default function App() {
     });
   }, []);
 
+  console.log("hi");
   return (
     isLoading ? <div>Loading</div> :
-    <BrowserRouter>
+    <Router>
       <Switch>
         <Route exact path="/" render={() => <Redirect to="/app/scoreboard" />} />
         <Route
@@ -53,10 +55,10 @@ export default function App() {
           render={() => <Redirect to="/app/Scoreboard" />}
         />
         <PrivateRoute path="/app" component={Layout} prop={{userData: userData}}/>
-        <PublicRoute path="/login" component={Login} />
+        <PublicRoute path="/login" component={Login} prop={{historyData :history}}/>
         <Route component={Error} />
       </Switch>
-    </BrowserRouter>
+    </Router>
   );
 
   // #######################################################################
