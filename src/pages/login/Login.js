@@ -20,21 +20,65 @@ import logo from "./logo.svg";
 import google from "../../images/google.svg";
 
 // context
-import { useUserDispatch, loginUser } from "../../context/UserContext";
+
+import api from "../../apiservice"
+import APIService from "../../apiservice";
+import { useHistory } from "react-router-dom";
+
 
 function Login(props) {
   var classes = useStyles();
 
   // global
-  var userDispatch = useUserDispatch();
 
   // local
   var [isLoading, setIsLoading] = useState(false);
   var [error, setError] = useState(null);
   var [activeTabId, setActiveTabId] = useState(0);
   var [nameValue, setNameValue] = useState("");
-  var [loginValue, setLoginValue] = useState("admin@flatlogic.com");
-  var [passwordValue, setPasswordValue] = useState("password");
+  var [loginValue, setLoginValue] = useState("");
+  var [passwordValue, setPasswordValue] = useState("");
+  var [rollValue, setRollValue] = useState("");
+  var [contactValue, setContactValue] = useState("");
+  var [errorMessage, setErrorMessage] = useState('');
+  var history = useHistory();
+
+  const handleLogin = async (e) => {
+    setIsLoading(true);
+    try {
+      let res = await api.login(loginValue, passwordValue);
+      let user = res.data.user;
+      if(!user){
+        setError(true);
+        setErrorMessage(res.data.message);
+        setIsLoading(false);
+      }
+      localStorage.setItem("session", user.session);
+      setIsLoading(false);
+      return history.push("/app");
+    } catch (e) {
+      setError(true);
+      setErrorMessage("Something Went Wrong");
+      setIsLoading(false);
+    }
+  }
+
+  const handleRegister = async () => {
+    setIsLoading(true);
+    try {
+      let res = await api.register(loginValue, passwordValue, contactValue, nameValue, rollValue);
+      if(res.status === 200){
+        setActiveTabId(0);
+        setIsLoading(false);
+        setError(true);
+        setErrorMessage(res.data.message);
+      }
+    } catch (e) {
+      setError(true);
+      setErrorMessage("Something Went Wrong");
+      setIsLoading(false);
+    }
+  }
 
   return (
     <Grid container className={classes.container}>
@@ -46,31 +90,19 @@ function Login(props) {
         <div className={classes.form}>
           <Tabs
             value={activeTabId}
-            onChange={(e, id) => setActiveTabId(id)}
+            onChange={(e, id) => {setActiveTabId(id); setError(false)}}
             indicatorColor="primary"
             textColor="primary"
             centered
           >
             <Tab label="Login" classes={{ root: classes.tab }} />
-            <Tab label="New User" classes={{ root: classes.tab }} />
+            <Tab label="Register" classes={{ root: classes.tab }} />
           </Tabs>
           {activeTabId === 0 && (
             <React.Fragment>
-              <Typography variant="h1" className={classes.greeting}>
-                Good Morning, User
-              </Typography>
-              <Button size="large" className={classes.googleButton}>
-                <img src={google} alt="google" className={classes.googleIcon} />
-                &nbsp;Sign in with Google
-              </Button>
-              <div className={classes.formDividerContainer}>
-                <div className={classes.formDivider} />
-                <Typography className={classes.formDividerWord}>or</Typography>
-                <div className={classes.formDivider} />
-              </div>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                  {errorMessage}
                 </Typography>
               </Fade>
               <TextField
@@ -111,15 +143,8 @@ function Login(props) {
                     disabled={
                       loginValue.length === 0 || passwordValue.length === 0
                     }
-                    onClick={() =>
-                      loginUser(
-                        userDispatch,
-                        loginValue,
-                        passwordValue,
-                        props.history,
-                        setIsLoading,
-                        setError,
-                      )
+                    onClick={(e) =>
+                      handleLogin(e)
                     }
                     variant="contained"
                     color="primary"
@@ -128,27 +153,17 @@ function Login(props) {
                     Login
                   </Button>
                 )}
-                <Button
-                  color="primary"
-                  size="large"
-                  className={classes.forgetButton}
-                >
-                  Forget Password
-                </Button>
               </div>
             </React.Fragment>
           )}
           {activeTabId === 1 && (
             <React.Fragment>
-              <Typography variant="h1" className={classes.greeting}>
-                Welcome!
-              </Typography>
               <Typography variant="h2" className={classes.subGreeting}>
-                Create your account
+                Register
               </Typography>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                  {errorMessage}
                 </Typography>
               </Fade>
               <TextField
@@ -196,20 +211,43 @@ function Login(props) {
                 type="password"
                 fullWidth
               />
+              <TextField
+                id="rollNumber"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={rollValue}
+                onChange={e => setRollValue(e.target.value)}
+                margin="normal"
+                placeholder="Roll Number"
+                type="text"
+                fullWidth
+              />
+              <TextField
+                id="contactNumber"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={contactValue}
+                onChange={e => setContactValue(e.target.value)}
+                margin="normal"
+                placeholder="Contact"
+                type="text"
+                fullWidth
+              />
               <div className={classes.creatingButtonContainer}>
                 {isLoading ? (
                   <CircularProgress size={26} />
                 ) : (
                   <Button
                     onClick={() =>
-                      loginUser(
-                        userDispatch,
-                        loginValue,
-                        passwordValue,
-                        props.history,
-                        setIsLoading,
-                        setError,
-                      )
+                      handleRegister()
                     }
                     disabled={
                       loginValue.length === 0 ||
@@ -226,27 +264,9 @@ function Login(props) {
                   </Button>
                 )}
               </div>
-              <div className={classes.formDividerContainer}>
-                <div className={classes.formDivider} />
-                <Typography className={classes.formDividerWord}>or</Typography>
-                <div className={classes.formDivider} />
-              </div>
-              <Button
-                size="large"
-                className={classnames(
-                  classes.googleButton,
-                  classes.googleButtonCreating,
-                )}
-              >
-                <img src={google} alt="google" className={classes.googleIcon} />
-                &nbsp;Sign in with Google
-              </Button>
             </React.Fragment>
           )}
         </div>
-        <Typography color="primary" className={classes.copyright}>
-        © 2014-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://flatlogic.com" rel="noopener noreferrer" target="_blank">Flatlogic</a>, LLC. All rights reserved.
-        </Typography>
       </div>
     </Grid>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 
 // components
@@ -8,23 +8,51 @@ import Layout from "./Layout";
 import Error from "../pages/error";
 import Login from "../pages/login";
 
+import api from "../apiservice"
+
 // context
-import { useUserState } from "../context/UserContext";
 
 export default function App() {
   // global
-  var { isAuthenticated } = useUserState();
+  var session = localStorage.getItem("session");
+  var [isAuthenticated, setIsAuthenticated] = useState(false);
+  var [userData, setUserData] = useState({});
+  var [isLoading, setIsLoading] = useState(true);
+
+  const getSession = async () => {
+    let res = undefined;
+    if(session)
+      res = await api.getUserData();
+    return res;
+  };
+
+  useEffect( () => {
+    let res = getSession().then(res => {
+      if(res && res.data.user) {
+        setIsAuthenticated(true);
+        setUserData(res.data.user);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        setIsAuthenticated(false);
+      }
+    }).catch(e => {
+      setIsAuthenticated(false);
+      setIsLoading(false);
+    });
+  }, [])
 
   return (
+    isLoading ? <div>Loading</div> :
     <HashRouter>
       <Switch>
-        <Route exact path="/" render={() => <Redirect to="/app/dashboard" />} />
+        <Route exact path="/" render={() => <Redirect to="/app/scoreboard" />} />
         <Route
           exact
           path="/app"
-          render={() => <Redirect to="/app/dashboard" />}
+          render={() => <Redirect to="/app/Scoreboard" />}
         />
-        <PrivateRoute path="/app" component={Layout} />
+        <PrivateRoute path="/app" component={Layout} prop={{userData: userData}}/>
         <PublicRoute path="/login" component={Login} />
         <Route component={Error} />
       </Switch>
@@ -33,13 +61,13 @@ export default function App() {
 
   // #######################################################################
 
-  function PrivateRoute({ component, ...rest }) {
+  function PrivateRoute({ component, prop, ...rest }) {
     return (
       <Route
         {...rest}
         render={props =>
           isAuthenticated ? (
-            React.createElement(component, props)
+            React.createElement(component, prop)
           ) : (
             <Redirect
               to={{
