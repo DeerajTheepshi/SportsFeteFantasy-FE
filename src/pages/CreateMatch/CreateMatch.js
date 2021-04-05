@@ -175,27 +175,6 @@ export function AddMatch () {
   };
 
 
-
-  // const handleAddPlayer = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     let res = await APIService.addPlayer(playerName, teamName);
-  //     if(res.data.status !== 200){
-  //       setError(res.data.message);
-  //       setIsLoading(false);
-  //       setTimeout(()=>{setError("")}, 5000);
-  //       return
-  //     }
-  //     setSuccess(res.data.message);
-  //     setIsLoading(false);
-  //     setTimeout(()=>{setSuccess("")}, 5000);
-  //   } catch (e) {
-  //     console.log(e);
-  //     setError("Something Went Wrong");
-  //     setTimeout(()=>{setError("")}, 5000);
-  //   }
-  // };
-
   return (
     <>
       <Card className={classes.root}>

@@ -137,7 +137,7 @@ export function PickTeam (props) {
   };
 
   const fetchAlreadyPicked = async () => {
-    let res = await APIService.getPickedPlayersForMatch();
+    let res = await APIService.getPickedPlayersForMatch(match._id);
     return res;
   };
 
@@ -150,13 +150,15 @@ export function PickTeam (props) {
       }
       let squadIds = res.data.data;
       let cHome11 = [...home11s];
-      for (let i=0;i<squad.length;i++) {
-        if(squadIds.includes(squad[i]._id)){
-          squad[i].selected = 1;
-          cHome11.push(squad[i]._id);
-        } else  squad[i].selected = 0;
+      let cSquad = [...squad];
+      for (let i=0;i<cSquad.length;i++) {
+        if(squadIds.includes(cSquad[i]._id)){
+          cSquad[i].selected = 1;
+          cHome11.push(cSquad[i]._id);
+        } else  cSquad[i].selected = 0;
       }
       setHome11s(cHome11);
+      setSquad(cSquad);
     }). catch(e => {
       setError("Something Went Wrong");
       setTimeout(()=>{setError("")}, 5000);
@@ -170,7 +172,11 @@ export function PickTeam (props) {
         setTimeout(()=>{setError("")}, 5000);
         return
       }
-      setSquad(res.data.data);
+      let data = res.data.data;
+      for (let i=0;i<data.length;i++) {
+        data[i].selected = 0;
+      }
+      setSquad(data);
     }). catch(e => {
       setError("Something Went Wrong");
       setTimeout(()=>{setError("")}, 5000);
@@ -207,15 +213,30 @@ export function PickTeam (props) {
       home11Changed.push(playerId);
     }
     setHome11s(home11Changed);
+
+
+    let cSquad = [...squad];
+    for (let i=0;i<cSquad.length;i++) {
+      if(home11Changed.includes(cSquad[i]._id)){
+        cSquad[i].selected = 1;
+      } else  cSquad[i].selected = 0;
+    }
+    setSquad(cSquad);
+    console.log(home11s)
   };
 
   const setPlayersForMatch = async () => {
+    if(!match._id) {
+      setError("No Match Selected");
+      setTimeout(()=>{setError("")}, 5000);
+      return;
+    }
     if(home11s.length > 3) {
       setError("You can select only less than 4 Players");
       setTimeout(()=>{setError("")}, 5000);
       return;
     }
-    let res = await APIService.setPlayersForMatch(home11s);
+    let res = await APIService.setPlayersForMatch(home11s, match._id);
     if(res.data.status !== 200){
       setError(res.data.message);
       setTimeout(()=>{setError("")}, 5000);
@@ -230,23 +251,23 @@ export function PickTeam (props) {
       <Card className={classes.root}>
         <CardContent>
           <Typography variant={'h1'} className={classes.title}>
-            Pick Team
-          </Typography>
+            Pick Team <br/>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              label="Select Match"
+              className={classes.selector}
+            >
+              {matches.map((match, key) => {
+                return (
+                  <MenuItem value={match._id} onClick={() => setMatch(match)}>
+                    {match.matchNo + ". " + match.homeTeam + " vs " + match.awayTeam}
+                  </MenuItem>
+                )
+              })}
 
-          <Select
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
-            onChange={(e)=>{setTeamName(e.target.value)}}
-            label="Select Match"
-            className={classes.selector}
-          >
-            {matches.map((match, key) => {
-              return (
-                <MenuItem value={match._id} onClick={() => setMatch(match)}>
-                  {match.matchNo + " " + match.homeTeam + " vs " + match.awayTeam}
-                </MenuItem>
-              )
-            })}
+            </Select>
+          </Typography>
 
           <br/>
           {error.length !== 0 &&
@@ -288,7 +309,7 @@ export function PickTeam (props) {
                         {player.teamName}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        <Checkbox
+                        <Checkbox checked={player.selected}
                           color="primary" onChange={() => selectHomePlayer(player._id)}/>
                       </StyledTableCell>
                     </StyledTableRow>
@@ -299,7 +320,7 @@ export function PickTeam (props) {
           </CardContent>
         </Card>
       }
-      {!isLive &&<Button disabled={isLoading} onClick={setPlayersForMatch} className={classes.button} variant={"contained"} color="primary">ADD</Button>}
+      <Button disabled={isLoading} onClick={setPlayersForMatch} className={classes.button} variant={"contained"} color="primary">ADD</Button>}
     </>
   )
 }

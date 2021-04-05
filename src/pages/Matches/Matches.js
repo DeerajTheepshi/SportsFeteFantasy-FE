@@ -158,15 +158,24 @@ export function Matches () {
 
   }, [isScoring]);
 
-  const toggleLive = async () => {
-    let res = await APIService.setLiveStatus();
+  const toggleLive = async (match) => {
+    let res = await APIService.toggleLive(match._id);
     if(res.data.status !== 200){
       setError(res.data.message);
       setTimeout(()=>{setError("")}, 5000);
       return
     }
     setSuccess(res.data.message);
-    setIsLive(!isLive);
+
+    fetchMatches().then((res) => {
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        return
+      }
+      setMatches(res.data.matches);
+    }).catch(e=>{
+      setError("Something Went Wrong");
+    });
     setTimeout(()=>{setSuccess("")}, 5000);
   };
 
@@ -198,6 +207,17 @@ export function Matches () {
       return
     }
     setSuccess(res.data.message);
+
+    fetchMatches().then((res) => {
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        return
+      }
+      setMatches(res.data.matches);
+    }).catch(e=>{
+      setError("Something Went Wrong");
+    });
+
     setTimeout(()=>{setSuccess("")}, 5000);
   };
 
@@ -209,6 +229,17 @@ export function Matches () {
       return
     }
     setSuccess(res.data.message);
+
+    fetchMatches().then((res) => {
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        return
+      }
+      setMatches(res.data.matches);
+    }).catch(e=>{
+      setError("Something Went Wrong");
+    });
+
     setTimeout(()=>{setSuccess("")}, 5000);
   };
 
@@ -265,7 +296,7 @@ export function Matches () {
                 </TableHead>
                 <TableBody stripedRows>
                   {matches.map((match) => (
-                    <StyledTableRow key={match.name}>
+                    <StyledTableRow key={match.match._id}>
                       <StyledTableCell component="th" scope="row">
                         {match.match.matchNo}
                       </StyledTableCell>
@@ -277,25 +308,25 @@ export function Matches () {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Switch
-                          checked={match}
-                          onChange={()=>toggleLive(isLive)}
+                          checked={match.match.isLive}
+                          onChange={()=>toggleLive(match.match)}
                           color="primary"
                         />
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        <Button disabled={match.isSimulated} variant={"contained"}
-                                onClick={()=>gotToScoring(match)} color="primary">
+                        <Button disabled={!match.match.isLive || match.match.isSimulated} variant={"contained"}
+                                onClick={()=>gotToScoring(match.match)} color="primary">
                           {match.scored && "Edit Scores" }
                           {!match.scored && "Add Scores"}
                         </Button>
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        <Button disabled={!match.scores} variant={"contained"}
-                                onClick={ !match.isSimulated() ?
-                                  ()=>simulate(match) : () => undoSimulate(match)
+                        <Button disabled={!match.scored} variant={"contained"}
+                                onClick={ !match.match.isSimulated ?
+                                  ()=>simulate(match.match) : () => undoSimulate(match.match)
                                 } color="primary">
-                          {!match.isSimulated && "Simulate"}
-                          {match.isSimulated && "Undo Simulation"}
+                          {!match.match.isSimulated && "Simulate"}
+                          {match.match.isSimulated && "Undo Simulation"}
                         </Button>
                       </StyledTableCell>
                     </StyledTableRow>

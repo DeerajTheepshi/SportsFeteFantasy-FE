@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
 // components
 import Layout from "./Layout";
@@ -40,11 +40,11 @@ export default function App() {
       setIsAuthenticated(false);
       setIsLoading(false);
     });
-  }, [])
+  }, []);
 
   return (
     isLoading ? <div>Loading</div> :
-    <HashRouter>
+    <BrowserRouter>
       <Switch>
         <Route exact path="/" render={() => <Redirect to="/app/scoreboard" />} />
         <Route
@@ -56,7 +56,7 @@ export default function App() {
         <PublicRoute path="/login" component={Login} />
         <Route component={Error} />
       </Switch>
-    </HashRouter>
+    </BrowserRouter>
   );
 
   // #######################################################################

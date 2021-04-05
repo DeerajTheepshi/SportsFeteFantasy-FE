@@ -41,9 +41,10 @@ function Login(props) {
   var [rollValue, setRollValue] = useState("");
   var [contactValue, setContactValue] = useState("");
   var [errorMessage, setErrorMessage] = useState('');
-  var history = useHistory();
+  const history = useHistory();
 
   const handleLogin = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
     try {
       let res = await api.login(loginValue, passwordValue);
@@ -55,13 +56,13 @@ function Login(props) {
       }
       localStorage.setItem("session", user.session);
       setIsLoading(false);
-      return history.push("/app");
+      history.push("/app");
     } catch (e) {
       setError(true);
       setErrorMessage("Something Went Wrong");
       setIsLoading(false);
     }
-  }
+  };
 
   const handleRegister = async () => {
     setIsLoading(true);
@@ -272,4 +273,4 @@ function Login(props) {
   );
 }
 
-export default withRouter(Login);
+export default Login;
