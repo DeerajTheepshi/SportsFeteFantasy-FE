@@ -18,6 +18,7 @@ import TableBody from "@material-ui/core/TableBody";
 import Paper from "@material-ui/core/Paper";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Checkbox from "@material-ui/core/Checkbox";
+import Loader from "react-loader-spinner";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -119,35 +120,64 @@ export function AddMatch () {
   const [awaySquad, setAwaySquad] = useState([]);
   const [away11s, setAway11s] = useState([]);
   const [home11s, setHome11s] = useState([]);
-  const [matchNo, setMatchNo] = useState(0);
+  const [matchNo, setMatchNo] = useState("");
 
   const handleAwayTeam = async (teamName) => {
-    let res = await APIService.getTeamSquad(teamName);
-    if(res.data.status !== 200) {
-      setError(res.data.message);
-      return
+    setIsLoading(true);
+    try {
+      let res = await APIService.getTeamSquad(teamName);
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        setIsLoading(false);
+        return
+      }
+      setAwaySquad(res.data.data);
+      setAwayTeamName(teamName);
+      setIsLoading(false);
+    } catch (e) {
+      setError("Something Went Wrong");
+      setIsLoading(false);
     }
-    setAwaySquad(res.data.data);
-    setAwayTeamName(teamName);
   };
 
   const handleHomeTeam = async (teamName) => {
-    let res = await APIService.getTeamSquad(teamName);
-    if(res.data.status !== 200) {
-      setError(res.data.message);
-      return
+    setIsLoading(true);
+    try {
+      let res = await APIService.getTeamSquad(teamName);
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        setIsLoading(false);
+        return
+      }
+      setHomeSquad(res.data.data);
+      setHomeTeamName(teamName);
+      setIsLoading(false);
+    } catch (e) {
+      setError("Something Went Wrong");
+      setIsLoading(false);
     }
-    setHomeSquad(res.data.data);
-    setHomeTeamName(teamName);
   };
 
   const handleCreateMatch = async () => {
-    let res = await APIService.createMatch(homeTeamName, awayTeamName, matchNo, home11s, away11s);
-    if(res.data.status !== 200) {
-      setError(res.data.message);
+    setIsLoading(true);
+    if(matchNo === "") {
+      setError("Please Enter Match No");
+      setIsLoading(false);
       return
     }
-    setSuccess(res.data.message);
+    try {
+      let res = await APIService.createMatch(homeTeamName, awayTeamName, matchNo, home11s, away11s);
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        setIsLoading(false);
+        return
+      }
+      setSuccess(res.data.message);
+      setIsLoading(false);
+    } catch (e) {
+      setError("Something Went Wrong");
+      setIsLoading(false);
+    }
   };
 
   const selectAwayPlayer = async (playerId) => {
@@ -242,6 +272,13 @@ export function AddMatch () {
             {success}
           </Typography>
           }
+          {isLoading && <div style={{width: "100%", height:"100%", display: "flex",
+            justifyContent: "center", alignItems : "center"
+          }}><Loader
+            type="ThreeDots"
+            color="#536DFE"
+            height={50}
+            width={50}/></div>}
         </CardContent>
       </Card>
 

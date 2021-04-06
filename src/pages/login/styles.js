@@ -112,6 +112,8 @@ export default makeStyles(theme => ({
     backgroundColor: theme.palette.text.hint + "40",
   },
   errorMessage: {
+    marginTop: "8px",
+    color: "red",
     textAlign: "center",
   },
   textFieldUnderline: {

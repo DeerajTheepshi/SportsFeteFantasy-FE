@@ -29,9 +29,6 @@ import { useHistory } from "react-router-dom";
 function Login(props) {
   var classes = useStyles();
 
-
-  // global
-
   // local
   var [isLoading, setIsLoading] = useState(false);
   var [error, setError] = useState(null);
@@ -50,16 +47,18 @@ function Login(props) {
     try {
       let res = await api.login(loginValue, passwordValue);
       let user = res.data.user;
-      if(!user){
+      if(res.data.status !== 200){
         setError(true);
         setErrorMessage(res.data.message);
         setIsLoading(false);
+        return;
       }
       localStorage.setItem("session", user.session);
       setIsLoading(false);
       setIsLoggedIn(true);
       window.location.href = "/";
     } catch (e) {
+      console.log(e);
       setError(true);
       setErrorMessage("Something Went Wrong");
       setIsLoading(false);

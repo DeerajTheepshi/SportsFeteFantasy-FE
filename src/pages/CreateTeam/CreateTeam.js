@@ -18,6 +18,7 @@ import TableBody from "@material-ui/core/TableBody";
 import Paper from "@material-ui/core/Paper";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Checkbox from "@material-ui/core/Checkbox";
+import Loader from "react-loader-spinner";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -112,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
 export function CreateTeam () {
   const classes = useStyles();
   const [teamName, setTeamName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [home11s, setHome11s] = useState([]);
@@ -123,6 +124,7 @@ export function CreateTeam () {
   const [roll3, setRoll3] = useState("");
 
   useEffect(() => {
+    setIsLoading(true);
     let data = [...players];
     for(let i=0;i<data.length;i++){
       if(home11s.includes(data[i]._id)) {
@@ -130,15 +132,11 @@ export function CreateTeam () {
       } else data[i].selected = 0;
     }
     setPlayers(data);
+    setIsLoading(false);
   }, [home11s]);
 
   const getAllPlayers = async () => {
     let res = await APIService.getTeamSquad("CSK");
-    return res;
-  };
-
-  const getAllUsers = async () => {
-    let res = await APIService.getAllUsers();
     return res;
   };
 
@@ -154,10 +152,12 @@ export function CreateTeam () {
   };
 
   useEffect(()=> {
+    setIsLoading(true);
     getAllPlayers().then(res => {
       if(res.data.status !== 200) {
         setError(res.data.message);
         setTimeout(()=>{setError("")}, 5000);
+        setIsLoading(false);
         return
       }
       let data = res.data.data;
@@ -167,22 +167,12 @@ export function CreateTeam () {
         } else data[i].selected = 0;
       }
       setPlayers(data);
+      setIsLoading(false);
     }). catch(e => {
       setError("Something Went Wrong");
       setTimeout(()=>{setError("")}, 5000);
+      setIsLoading(false);
     });
-
-    getAllUsers().then(res => {
-      if(res.data.status !== 200) {
-        setError(res.data.message);
-        setTimeout(()=>{setError("")}, 5000);
-        return
-      }
-      setUsers(res.data.data);
-    }). catch(e => {
-      setError("Something Went Wrong");
-      setTimeout(()=>{setError("")}, 5000);
-    })
   }, [success]);
 
   const selectHomePlayer = async (playerId) => {
@@ -198,14 +188,29 @@ export function CreateTeam () {
   };
 
   const addTeam = async () => {
-    let res = await APIService.createUsersWithTeam([roll1, roll2, roll3], teamName, home11s);
-    if(res.data.status !== 200){
-      setError(res.data.message);
-      setTimeout(()=>{setError("")}, 5000);
-      return
+    setIsLoading(true);
+    try {
+      let res = await APIService.createUsersWithTeam([roll1, roll2, roll3], teamName, home11s);
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+        setIsLoading(false);
+        return
+      }
+      setSuccess(res.data.message);
+      setTimeout(() => {
+        setSuccess("")
+      }, 5000);
+      setIsLoading(false);
+    } catch (e) {
+      setError("Something Went Wrong");
+      setTimeout(() => {
+        setError("")
+      }, 5000);
+      setIsLoading(false);
     }
-    setSuccess(res.data.message);
-    setTimeout(()=>{setSuccess("")}, 5000);
   };
 
 
@@ -258,6 +263,13 @@ export function CreateTeam () {
             {success}
           </Typography>
           }
+          {isLoading && <div style={{width: "100%", height:"100%", display: "flex",
+            justifyContent: "center", alignItems : "center"
+          }}><Loader
+            type="ThreeDots"
+            color="#536DFE"
+            height={50}
+            width={50}/></div>}
         </CardContent>
       </Card>
 

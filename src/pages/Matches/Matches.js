@@ -19,6 +19,7 @@ import Paper from "@material-ui/core/Paper";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Checkbox from "@material-ui/core/Checkbox";
 import Switch from "@material-ui/core/Switch";
+import Loader from "react-loader-spinner";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -111,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function Matches () {
   const classes = useStyles();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [matches, setMatches] = useState([]);
   const [success, setSuccess] = useState("");
@@ -137,124 +138,193 @@ export function Matches () {
     fetchMatches().then((res) => {
       if (res.data.status !== 200) {
         setError(res.data.message);
+        setIsLoading(false);
         return
       }
       setMatches(res.data.matches);
     }).catch(e=>{
       setError("Something Went Wrong");
+      setIsLoading(false);
     });
 
     fetchLiveStatus().then((res) => {
       if (res.data.status !== 200) {
         setError(res.data.message);
+        setIsLoading(false);
         return
       }
       setIsLive(res.data.data);
     }).catch(e=>{
       setError("Something Went Wrong");
+      setIsLoading(false)
     });
-
-
-
+    setIsLoading(false);
   }, [isScoring]);
 
   const toggleLive = async (match) => {
-    let res = await APIService.toggleLive(match._id);
-    if(res.data.status !== 200){
-      setError(res.data.message);
-      setTimeout(()=>{setError("")}, 5000);
-      return
-    }
-    setSuccess(res.data.message);
-
-    fetchMatches().then((res) => {
+    setIsLoading(true);
+    try {
+      let res = await APIService.toggleLive(match._id);
       if (res.data.status !== 200) {
         setError(res.data.message);
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+        setIsLoading(false);
         return
       }
-      setMatches(res.data.matches);
-    }).catch(e=>{
+      setSuccess(res.data.message);
+      fetchMatches().then((res) => {
+        if (res.data.status !== 200) {
+          setError(res.data.message);
+          setTimeout(() => {
+            setError("")}, 5000);
+          setIsLoading(false);
+          return
+        }
+        setMatches(res.data.matches);
+        setTimeout(()=>{setSuccess("")}, 5000);
+        setIsLoading(false);
+      }).catch(e=>{
+        setError("Something Went Wrong");
+        setIsLoading(false);
+      });
+    } catch (e) {
       setError("Something Went Wrong");
-    });
-    setTimeout(()=>{setSuccess("")}, 5000);
+      setTimeout(() => {setError("")}, 5000);
+      setIsLoading(false);
+    }
   };
 
   const gotToScoring = async (match) => {
-    let res = await APIService.getPlayers(match.homeEleven);
-    if(res.data.status!==200) {
-      setError(res.data.message);
-      setTimeout(()=>{setError("")}, 5000);
-      return
-    }
-    setHome11s(res.data.data);
+    setIsLoading(true);
+    try {
+      let res = await APIService.getPlayers(match.homeEleven);
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+        setIsLoading(false);
+        return
+      }
+      setHome11s(res.data.data);
 
-    res = await APIService.getPlayers(match.awayEleven);
-    if(res.data.status!==200) {
-      setError(res.data.message);
-      setTimeout(()=>{setError("")}, 5000);
-      return
+      res = await APIService.getPlayers(match.awayEleven);
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+        setIsLoading(false);
+        return
+      }
+      setIsScoring(true);
+      setAway11s(res.data.data);
+      setMatch(match);
+      setIsLoading(false);
+    } catch (e) {
+      setError("Something Went Wrong");
+      setTimeout(() => {setError("")}, 5000);
+      setIsLoading(false);
     }
-    setIsScoring(true);
-    setAway11s(res.data.data);
-    setMatch(match);
   };
 
   const simulate = async (match) => {
-    let res = await APIService.simulate(match._id);
-    if (res.data.status !== 200) {
-      setError(res.data.message);
-      setTimeout(()=>{setError("")}, 5000);
-      return
-    }
-    setSuccess(res.data.message);
-
-    fetchMatches().then((res) => {
+    setIsLoading(true);
+    try {
+      let res = await APIService.simulate(match._id);
       if (res.data.status !== 200) {
         setError(res.data.message);
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+        setIsLoading(false);
         return
       }
-      setMatches(res.data.matches);
-    }).catch(e=>{
-      setError("Something Went Wrong");
-    });
+      setSuccess(res.data.message);
+      setTimeout(()=>{setSuccess("")}, 5000);
 
-    setTimeout(()=>{setSuccess("")}, 5000);
+      fetchMatches().then((res) => {
+        if (res.data.status !== 200) {
+          setError(res.data.message);
+          setIsLoading(false);
+          return
+        }
+        setMatches(res.data.matches);
+        setIsLoading(false);
+      }).catch(e => {
+        setError("Something Went Wrong");
+        setTimeout(() => {setError("")}, 5000);
+        setIsLoading(false);
+      });
+    } catch (e) {
+      setError("Something Went Wrong");
+      setTimeout(() => {setError("")}, 5000);
+      setIsLoading(false);
+    }
   };
 
   const undoSimulate = async (match) => {
-    let res = await APIService.undoSimulate(match._id);
-    if (res.data.status !== 200) {
-      setError(res.data.message);
-      setTimeout(()=>{setError("")}, 5000);
-      return
-    }
-    setSuccess(res.data.message);
-
-    fetchMatches().then((res) => {
+    setIsLoading(true);
+    try {
+      let res = await APIService.undoSimulate(match._id);
       if (res.data.status !== 200) {
         setError(res.data.message);
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+        setIsLoading(false);
         return
       }
-      setMatches(res.data.matches);
-    }).catch(e=>{
-      setError("Something Went Wrong");
-    });
+      setSuccess(res.data.message);
+      setTimeout(()=>{setSuccess("")}, 5000);
 
-    setTimeout(()=>{setSuccess("")}, 5000);
+      fetchMatches().then((res) => {
+        if (res.data.status !== 200) {
+          setError(res.data.message);
+          setTimeout(() => {setError("")}, 5000);
+          setIsLoading(false);
+          return
+        }
+        setMatches(res.data.matches);
+      }).catch(e => {
+        setError("Something Went Wrong");
+        setTimeout(() => {setError("")}, 5000);
+        setIsLoading(false);
+      });
+      setIsLoading(false);
+    } catch (e) {
+      setError("Something Went Wrong");
+      setTimeout(() => {setError("")}, 5000);
+      setIsLoading(false);
+    }
   };
 
   const addScoreForMatch = async () => {
     let players = [... home11s, ...away11s];
     let pts = [...homePts, ...awayPts];
-    let res = await APIService.updateMatchScores(match._id, players, pts);
-    if (res.data.status !== 200) {
-      setError(res.data.message);
-      setTimeout(()=>{setError("")}, 5000);
-      return
+    setIsLoading(true);
+    try {
+      let res = await APIService.updateMatchScores(match._id, players, pts);
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+        return
+      }
+      setSuccess(res.data.message);
+      setIsScoring(false);
+      setTimeout(() => {
+        setSuccess("")
+      }, 5000);
+      setIsLoading(false)
+    } catch(e) {
+      setError("Something Went Wrong");
+      setTimeout(() => {setError("")}, 5000);
+      setIsLoading(false)
     }
-    setSuccess(res.data.message);
-    setIsScoring(false);
-    setTimeout(()=>{setSuccess("")}, 5000);
   };
 
 
@@ -278,6 +348,14 @@ export function Matches () {
               {success}
             </Typography>
             }
+
+            {isLoading && <div style={{width: "100%", height:"100%", display: "flex",
+              justifyContent: "center", alignItems : "center"
+            }}><Loader
+              type="ThreeDots"
+              color="#536DFE"
+              height={50}
+              width={50}/></div>}
 
             <br/><br/><br/>
 

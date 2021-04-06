@@ -18,6 +18,7 @@ import TableBody from "@material-ui/core/TableBody";
 import Paper from "@material-ui/core/Paper";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Checkbox from "@material-ui/core/Checkbox";
+import Loader from "react-loader-spinner";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -114,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function ScoreBoard (props) {
   const classes = useStyles();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [home11s, setHome11s] = useState([]);
@@ -143,6 +144,7 @@ export function ScoreBoard (props) {
       }
       let sortedUsers = res.data.data.sort(compare);
       setUsers(sortedUsers);
+      setIsLoading(false);
     }). catch(e => {
       setError("Something Went Wrong");
       setTimeout(()=>{setError("")}, 5000);
@@ -151,56 +153,68 @@ export function ScoreBoard (props) {
 
   return (
     <>
-      <Card className={classes.root}>
-        <CardContent>
-          <Typography variant={'h1'} className={classes.title}>
-            Scoreboard
-          </Typography>
-          <br/>
-          {error.length !== 0 &&
-          <Typography variant={'h6'} className={classes.error}>
-            {error}
-          </Typography>
-          }
-          {success.length !== 0 &&
-          <Typography variant={'h6'} className={classes.success} >
-            {success}
-          </Typography>
-          }
-        </CardContent>
-      </Card>
+      {isLoading ? <div style={{
+        width: "100vw", height: "100vh", display: "flex",
+        justifyContent: "center", alignItems: "center"
+      }}>
+        <Loader
+          type="ThreeDots"
+          color="#536DFE"
+          height={100}
+          width={100}/>
+      </div> : <>
+        <Card className={classes.root}>
+          <CardContent>
+            <Typography variant={'h1'} className={classes.title}>
+              Scoreboard
+            </Typography>
+            <br/>
+            {error.length !== 0 &&
+            <Typography variant={'h6'} className={classes.error}>
+              {error}
+            </Typography>
+            }
+            {success.length !== 0 &&
+            <Typography variant={'h6'} className={classes.success}>
+              {success}
+            </Typography>
+            }
+          </CardContent>
+        </Card>
 
-      <br/><br/><br/>
-      <Card className={classes.table}>
-        <CardContent>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell>Pos</StyledTableCell>
-                  <StyledTableCell>User Name</StyledTableCell>
-                  <StyledTableCell>Points</StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody stripedRows>
-                {users.map((user, key) => (
-                  <StyledTableRow key={user.name}>
-                    <StyledTableCell component="th" scope="row">
-                      {key+1}
-                    </StyledTableCell>
-                    <StyledTableCell component="th" scope="row">
-                      {user.name}
-                    </StyledTableCell>
-                    <StyledTableCell component="th" scope="row">
-                      {user.points}
-                    </StyledTableCell>
+        <br/><br/><br/>
+        <Card className={classes.table}>
+          <CardContent>
+            <TableContainer component={Paper}>
+              <Table className={classes.table} aria-label="simple table">
+                <TableHead>
+                  <StyledTableRow>
+                    <StyledTableCell>Pos</StyledTableCell>
+                    <StyledTableCell>User Name</StyledTableCell>
+                    <StyledTableCell>Points</StyledTableCell>
                   </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+                </TableHead>
+                <TableBody stripedRows>
+                  {users.map((user, key) => (
+                    <StyledTableRow key={user.name}>
+                      <StyledTableCell component="th" scope="row">
+                        {key + 1}
+                      </StyledTableCell>
+                      <StyledTableCell component="th" scope="row">
+                        {user.name}
+                      </StyledTableCell>
+                      <StyledTableCell component="th" scope="row">
+                        {user.points}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      </>
+      }
     </>
   )
 }
