@@ -72,6 +72,14 @@ const APIService = {
             ptsDetails: ptsDetails
         }))
     },
+    getMatchScores : (matchId, home11s, away11s) => {
+        return axios.default.post(config.BASE_URL + 'match/getMatchScorecard', qs.stringify({
+            session: localStorage.getItem("session"),
+            matchId: matchId,
+            home11s:home11s,
+            away11s: away11s
+        }))
+    },
     getAllPlayers : () => {
         return axios.default.post(config.BASE_URL + 'player/getAllPlayers', qs.stringify({
             session: localStorage.getItem("session"),

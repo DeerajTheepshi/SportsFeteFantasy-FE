@@ -6,15 +6,6 @@ import {
   withRouter,
 } from "react-router-dom";
 import classnames from "classnames";
-import {Box, IconButton, Link} from '@material-ui/core'
-import Icon from '@mdi/react'
-
-//icons
-import {
-  mdiFacebook as FacebookIcon,
-  mdiTwitter as TwitterIcon,
-  mdiGithub as GithubIcon,
-} from '@mdi/js'
 
 // styles
 import useStyles from "./styles";
@@ -22,15 +13,6 @@ import useStyles from "./styles";
 // components
 import Header from "../Header";
 import Sidebar from "../Sidebar";
-
-// pages
-import Dashboard from "../../pages/dashboard";
-import Typography from "../../pages/typography";
-import Notifications from "../../pages/notifications";
-import Maps from "../../pages/maps";
-import Tables from "../../pages/tables";
-import Icons from "../../pages/icons";
-import Charts from "../../pages/charts";
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -40,6 +22,7 @@ import { Matches } from "../../pages/Matches/Matches";
 import { CreateTeam } from "../../pages/CreateTeam/CreateTeam";
 import { PickTeam } from "../../pages/PickTeam/PickTeam";
 import { ScoreBoard } from "../../pages/Scoreboard/Scoreboard";
+import Typography from "@material-ui/core/Typography";
 
 function Layout(props) {
   var classes = useStyles();
@@ -60,10 +43,10 @@ function Layout(props) {
           >
             <div className={classes.fakeToolbar} />
             <Switch>
-              <Route path="/app/AddPlayer" component={AddPlayer}/>
-              <Route path="/app/AddMatch" component={AddMatch}/>
-              <Route path="/app/Matches" component={Matches}/>
-              <Route path="/app/AddTeam" component={CreateTeam}/>
+              <AdminRoute path="/app/AddPlayer" component={AddPlayer}/>
+              <AdminRoute path="/app/AddMatch" component={AddMatch}/>
+              <Route path="/app/Matches" render = {(props) =>  <Matches userData={userData}/>}/>
+              <AdminRoute path="/app/AddTeam" component={CreateTeam}/>
               <Route path="/app/SetTeam" render={(props) => <PickTeam userData={userData}/>}/>
               <Route path="/app/scoreboard" component={ScoreBoard}/>
             </Switch>
@@ -71,6 +54,30 @@ function Layout(props) {
         </>
     </div>
   );
+
+  function AdminRoute({ component, prop, ...rest }) {
+    return (
+      <Route
+        {...rest}
+        render={props =>
+          userData.isAdmin ? (
+            React.createElement(component, prop)
+          ) : (
+            <Redirect
+              to={{
+                pathname: "/",
+                state: {
+                  from: props.location,
+                },
+              }}
+            />
+          )
+        }
+      />
+    );
+  }
 }
+
+
 
 export default withRouter(Layout);

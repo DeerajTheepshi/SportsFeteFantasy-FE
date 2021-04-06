@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export function Matches () {
+export function Matches ({userData}) {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -121,6 +121,9 @@ export function Matches () {
   const [home11s, setHome11s] = useState([]);
   const [away11s, setAway11s] = useState([]);
   const [isLive, setIsLive] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(userData.isAdmin);
+  const [home11Scores, setHome11Scores] = useState({});
+  const [away11Scores, setAway11Scores] = useState({});
   let homePts = [0,0,0,0,0,0,0,0,0,0,0];
   let awayPts = [0,0,0,0,0,0,0,0,0,0,0];
 
@@ -147,17 +150,6 @@ export function Matches () {
       setIsLoading(false);
     });
 
-    fetchLiveStatus().then((res) => {
-      if (res.data.status !== 200) {
-        setError(res.data.message);
-        setIsLoading(false);
-        return
-      }
-      setIsLive(res.data.data);
-    }).catch(e=>{
-      setError("Something Went Wrong");
-      setIsLoading(false)
-    });
     setIsLoading(false);
   }, [isScoring]);
 
@@ -222,6 +214,18 @@ export function Matches () {
       setIsScoring(true);
       setAway11s(res.data.data);
       setMatch(match);
+
+      res = await APIService.getMatchScores(match._id, match.homeEleven, match.awayEleven);
+      if (res.data.status !== 200) {
+        setError(res.data.message);
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+        setIsLoading(false);
+        return
+      }
+      setHome11Scores(res.data.homePts);
+      setAway11Scores(res.data.awayPts);
       setIsLoading(false);
     } catch (e) {
       setError("Something Went Wrong");
@@ -366,10 +370,12 @@ export function Matches () {
                     <StyledTableCell>MatchNo</StyledTableCell>
                     <StyledTableCell>Home</StyledTableCell>
                     <StyledTableCell>Away</StyledTableCell>
+                    {isAdmin ? <>
                     <StyledTableCell>SetLive</StyledTableCell>
                     <StyledTableCell>AddScore</StyledTableCell>
                     <StyledTableCell>Simulate</StyledTableCell>
-
+                    </> :  <StyledTableCell>View Score</StyledTableCell>
+                    }
                   </StyledTableRow>
                 </TableHead>
                 <TableBody stripedRows>
@@ -384,29 +390,38 @@ export function Matches () {
                       <StyledTableCell component="th" scope="row">
                         {match.match.awayTeam}
                       </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Switch
-                          checked={match.match.isLive}
-                          onChange={()=>toggleLive(match.match)}
-                          color="primary"
-                        />
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button disabled={!match.match.isLive || match.match.isSimulated} variant={"contained"}
-                                onClick={()=>gotToScoring(match.match)} color="primary">
-                          {match.scored && "Edit Scores" }
-                          {!match.scored && "Add Scores"}
-                        </Button>
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
+
+                      {isAdmin ? <>
+                        <StyledTableCell align="center">
+                          <Switch
+                            checked={match.match.isLive}
+                            onChange={() => toggleLive(match.match)}
+                            color="primary"
+                          />
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          <Button disabled={!match.match.isLive || match.match.isSimulated} variant={"contained"}
+                                  onClick={() => gotToScoring(match.match)} color="primary">
+                            {match.scored && "Edit Scores"}
+                            {!match.scored && "Add Scores"}
+                          </Button>
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          <Button disabled={!match.scored} variant={"contained"}
+                                  onClick={!match.match.isSimulated ?
+                                    () => simulate(match.match) : () => undoSimulate(match.match)
+                                  } color="primary">
+                            {!match.match.isSimulated && "Simulate"}
+                            {match.match.isSimulated && "Undo Simulation"}
+                          </Button>
+                        </StyledTableCell>
+                      </> : <StyledTableCell align="center">
                         <Button disabled={!match.scored} variant={"contained"}
-                                onClick={ !match.match.isSimulated ?
-                                  ()=>simulate(match.match) : () => undoSimulate(match.match)
-                                } color="primary">
-                          {!match.match.isSimulated && "Simulate"}
-                          {match.match.isSimulated && "Undo Simulation"}
+                                onClick={() => gotToScoring(match.match)} color="primary">
+                          View Scores
                         </Button>
                       </StyledTableCell>
+                      }
                     </StyledTableRow>
                   ))}
                 </TableBody>
@@ -466,9 +481,14 @@ export function Matches () {
                             {player.name}
                           </StyledTableCell>
                           <StyledTableCell align="center">
-                            <TextField id="outlined-basic" label="Points"
-                                       onChange = {e=>{homePts[key] = e.target.value;}}
-                                       className={classes.name}/>
+                            {isAdmin ?
+                              <TextField id="outlined-basic" label="Points"
+                                         onChange={e => {
+                                           homePts[key] = e.target.value;
+                                         }}
+                                         className={classes.name}/> :
+                              home11Scores[player._id]
+                            }
                           </StyledTableCell>
                         </StyledTableRow>
                       ))}
@@ -493,9 +513,14 @@ export function Matches () {
                             {player.name}
                           </StyledTableCell>
                           <StyledTableCell align="center">
-                            <TextField id="outlined-basic" label="Points"
-                                       onChange = {e=>{awayPts[key] = e.target.value;}}
-                                       className={classes.name}/>
+                            {isAdmin ?
+                              <TextField id="outlined-basic" label="Points"
+                                         onChange={e => {
+                                           awayPts[key] = e.target.value;
+                                         }}
+                                         className={classes.name}/> :
+                              away11Scores[player._id]
+                            }
                           </StyledTableCell>
                         </StyledTableRow>
                       ))}
@@ -506,7 +531,7 @@ export function Matches () {
             </div>
           </CardContent>
         </Card>
-        <Button disabled={isLoading} onClick={() => addScoreForMatch()} className={classes.button} variant={"contained"} color="primary">ADD</Button>
+        {isAdmin && <Button disabled={isLoading} onClick={() => addScoreForMatch()} className={classes.button} variant={"contained"} color="primary">ADD</Button>}
 
       </>
   )}

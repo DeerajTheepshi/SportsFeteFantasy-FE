@@ -39,7 +39,9 @@ const adminItems = [
 
 const structure = [
   { id: 0, label: "Scoreboard", link: "/app/scoreboard", icon: <Grade/> },
-  { id: 0, label: "Pick Team", link: "/app/setteam", icon: <GroupAdd /> },
+  { id: 1, label: "Pick Team", link: "/app/setteam", icon: <GroupAdd /> },
+  { id: 2, label: "Matches", link: "/app/matches", icon: <SportsEsports /> },
+
 
 ];
 

@@ -266,6 +266,11 @@ function Login(props) {
           )}
         </div>
       </div>
+      <Typography variant={'colorPrimary'} style={{textAlign: "center", position: "fixed",
+        bottom:"0", left:"0", right:"0"
+      }}>
+        Made With ❤️ By Delta Force
+      </Typography>
     </Grid>
   );
 }

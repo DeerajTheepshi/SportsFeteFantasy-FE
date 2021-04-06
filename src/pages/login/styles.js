@@ -28,7 +28,7 @@ export default makeStyles(theme => ({
     },
   },
   logotypeImage: {
-    transform: "scale(0.25)",
+    transform: "scale(0.15)",
     marginTop: "-900px",
   },
   logotypeLogo: {

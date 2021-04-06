@@ -310,7 +310,7 @@ export function PickTeam (props) {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Checkbox checked={player.selected}
-                          color="primary" onChange={() => selectHomePlayer(player._id)}/>
+                                  color="primary" onChange={() => selectHomePlayer(player._id)}/>
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
@@ -320,7 +320,7 @@ export function PickTeam (props) {
           </CardContent>
         </Card>
       }
-      <Button disabled={isLoading} onClick={setPlayersForMatch} className={classes.button} variant={"contained"} color="primary">ADD</Button>}
+      <Button disabled={isLoading} onClick={setPlayersForMatch} className={classes.button} variant={"contained"} color="primary">ADD</Button>
     </>
   )
 }
