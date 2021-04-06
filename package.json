@@ -24,6 +24,7 @@
     "react-apexcharts": "^1.3.7",
     "react-dom": "^16.14.0",
     "react-google-maps": "^9.4.5",
+    "react-loader-spinner": "^4.0.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "react-syntax-highlighter": "^15.4.3",

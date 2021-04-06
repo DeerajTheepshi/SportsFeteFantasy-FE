@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect, useHistory } from "react-router-dom";
+import Loader from "react-loader-spinner";
+
 
 // components
 import Layout from "./Layout";
@@ -9,6 +11,7 @@ import Error from "../pages/error";
 import Login from "../pages/login";
 
 import api from "../apiservice"
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 // context
 
@@ -27,6 +30,7 @@ export default function App() {
     return res;
   };
 
+
   useEffect( () => {
     let res = getSession().then(res => {
       if(res && res.data.user) {
@@ -43,22 +47,27 @@ export default function App() {
     });
   }, []);
 
-  console.log("hi");
   return (
-    isLoading ? <div>Loading</div> :
-    <Router>
-      <Switch>
-        <Route exact path="/" render={() => <Redirect to="/app/scoreboard" />} />
-        <Route
-          exact
-          path="/app"
-          render={() => <Redirect to="/app/Scoreboard" />}
-        />
-        <PrivateRoute path="/app" component={Layout} prop={{userData: userData}}/>
-        <PublicRoute path="/login" component={Login} prop={{historyData :history}}/>
-        <Route component={Error} />
-      </Switch>
-    </Router>
+    isLoading ? <div style={{width: "100vw", height:"100vh", display: "flex",
+        justifyContent: "center", alignItems : "center"
+      }}><Loader
+        type="ThreeDots"
+        color="#536DFE"
+        height={100}
+        width={100}/></div>:
+      <Router>
+        <Switch>
+          <Route exact path="/" render={() => <Redirect to="/app/scoreboard" />} />
+          <Route
+            exact
+            path="/app"
+            render={() => <Redirect to="/app/Scoreboard" />}
+          />
+          <PrivateRoute path="/app" component={Layout} prop={{userData: userData}}/>
+          <PublicRoute path="/login" component={Login} prop={{historyData :history}}/>
+          <Route component={Error} />
+        </Switch>
+      </Router>
   );
 
   // #######################################################################
