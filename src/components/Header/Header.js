@@ -139,7 +139,7 @@ export default function Header(props) {
           )}
         </IconButton>
         <Typography variant="h6" weight="medium" className={classes.logotype}>
-          IPL FANTASY
+          SportsFete Fantasy
         </Typography>
         <div className={classes.grow} />
         <div className={classes.profileMenuUser}>

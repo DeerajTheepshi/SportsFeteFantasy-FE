@@ -9,7 +9,7 @@ import {
   QuestionAnswer as SupportIcon,
   LibraryBooks as LibraryIcon,
   HelpOutline as FAQIcon,
-  ArrowBack as ArrowBackIcon,
+  ArrowBack as ArrowBackIcon, Grade, SportsEsports, QueuePlayNext, Group, Eject, GroupAdd,
 } from "@material-ui/icons";
 import { useTheme } from "@material-ui/styles";
 import { withRouter } from "react-router-dom";
@@ -30,16 +30,16 @@ import {
 } from "../../context/LayoutContext";
 
 const adminItems = [
-  { id: 0, label: "Scoreboard", link: "/app/scoreboard", icon: <HomeIcon /> },
-  { id: 1, label: "Matches", link: "/app/matches", icon: <HomeIcon /> },
-  { id: 2, label: "Add Match", link: "/app/AddMatch", icon: <HomeIcon /> },
-  { id: 3, label: "Add User Team", link: "/app/AddTeam", icon: <HomeIcon /> },
-  { id: 4, label: "Add Player", link: "/app/AddPlayer", icon: <HomeIcon /> },
-]
+  { id: 0, label: "Scoreboard", link: "/app/scoreboard", icon: <Grade /> },
+  { id: 1, label: "Matches", link: "/app/matches", icon: <SportsEsports /> },
+  { id: 2, label: "Add Match", link: "/app/AddMatch", icon: <QueuePlayNext /> },
+  { id: 3, label: "Add User Team", link: "/app/AddTeam", icon: <Group /> },
+  { id: 4, label: "Add Player", link: "/app/AddPlayer", icon: <Eject /> },
+];
 
 const structure = [
-  { id: 0, label: "Scoreboard", link: "/app/scoreboard", icon: <HomeIcon /> },
-  { id: 0, label: "Pick Team", link: "/app/setteam", icon: <HomeIcon /> },
+  { id: 0, label: "Scoreboard", link: "/app/scoreboard", icon: <Grade/> },
+  { id: 0, label: "Pick Team", link: "/app/setteam", icon: <GroupAdd /> },
 
 ];
 

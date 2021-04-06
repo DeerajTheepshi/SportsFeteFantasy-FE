@@ -87,7 +87,7 @@ function Login(props) {
   return (
     <Grid container className={classes.container}>
       <div className={classes.formContainer}>
-        <img src={"/sportsfetelogo.png"} alt={"logo"} className={classes.logotypeImage}/>
+        <img src={"/fantasy_text.png"} alt={"logo"} className={classes.logotypeImage}/>
         <div className={classes.form}>
           <Tabs
             value={activeTabId}

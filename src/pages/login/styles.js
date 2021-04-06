@@ -29,7 +29,10 @@ export default makeStyles(theme => ({
   },
   logotypeImage: {
     transform: "scale(0.25)",
-    marginTop: "-400px",
+    marginTop: "-900px",
+  },
+  logotypeLogo: {
+    transform: "scale(0.25)",
   },
   logotypeText: {
     color: "white",
@@ -52,7 +55,7 @@ export default makeStyles(theme => ({
   },
   form: {
     width: 320,
-    marginTop: "-200px",
+    marginTop: "-900px",
   },
   tab: {
     fontWeight: 400,

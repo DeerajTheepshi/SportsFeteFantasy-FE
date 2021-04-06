@@ -177,13 +177,17 @@ export function ScoreBoard (props) {
             <Table className={classes.table} aria-label="simple table">
               <TableHead>
                 <StyledTableRow>
+                  <StyledTableCell>Pos</StyledTableCell>
                   <StyledTableCell>User Name</StyledTableCell>
                   <StyledTableCell>Points</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody stripedRows>
-                {users.map((user) => (
+                {users.map((user, key) => (
                   <StyledTableRow key={user.name}>
+                    <StyledTableCell component="th" scope="row">
+                      {key+1}
+                    </StyledTableCell>
                     <StyledTableCell component="th" scope="row">
                       {user.name}
                     </StyledTableCell>

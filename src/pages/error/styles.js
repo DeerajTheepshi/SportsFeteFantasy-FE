@@ -27,8 +27,7 @@ export default makeStyles(theme => ({
     marginLeft: theme.spacing(2),
   },
   logotypeIcon: {
-    width: 70,
-    marginRight: theme.spacing(2),
+    transform: "scale(0.5)"
   },
   paperRoot: {
     boxShadow: theme.customShadows.widgetDark,
