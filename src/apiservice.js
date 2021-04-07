@@ -10,7 +10,6 @@ const APIService = {
             email: email,
             password: password,
             name: username,
-            rollNo: roll,
             contact: contact,
         }))
     },
@@ -119,7 +118,7 @@ const APIService = {
     createUsersWithTeam : (rollNos, teamName, squad) => {
         return axios.default.post(config.BASE_URL + 'createUsers', qs.stringify({
             session: localStorage.getItem("session"),
-            rollNos: rollNos,
+            emails: rollNos,
             teamName: teamName,
             squad: squad,
         }))

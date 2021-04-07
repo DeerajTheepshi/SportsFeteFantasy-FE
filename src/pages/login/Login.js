@@ -69,7 +69,7 @@ function Login(props) {
   const handleRegister = async () => {
     setIsLoading(true);
     try {
-      let res = await api.register(loginValue, passwordValue, contactValue, nameValue, rollValue);
+      let res = await api.register(loginValue, passwordValue, contactValue, nameValue);
       if(res.status === 200){
         setActiveTabId(0);
         setIsLoading(false);
@@ -207,21 +207,6 @@ function Login(props) {
                 margin="normal"
                 placeholder="Password"
                 type="password"
-                fullWidth
-              />
-              <TextField
-                id="rollNumber"
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-                value={rollValue}
-                onChange={e => setRollValue(e.target.value)}
-                margin="normal"
-                placeholder="Roll Number"
-                type="text"
                 fullWidth
               />
               <TextField

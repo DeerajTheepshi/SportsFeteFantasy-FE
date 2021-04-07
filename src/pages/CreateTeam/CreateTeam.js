@@ -119,9 +119,9 @@ export function CreateTeam () {
   const [home11s, setHome11s] = useState([]);
   const [users, setUsers] = useState([]);
   const [players, setPlayers] = useState([]);
-  const [roll1, setRoll1] = useState("");
-  const [roll2, setRoll2] = useState("");
-  const [roll3, setRoll3] = useState("");
+  const [email1, setEmail1] = useState("");
+  const [email2, setEmail2] = useState("");
+  const [email3, setEmail3] = useState("");
 
   useEffect(() => {
     setIsLoading(true);
@@ -190,7 +190,7 @@ export function CreateTeam () {
   const addTeam = async () => {
     setIsLoading(true);
     try {
-      let res = await APIService.createUsersWithTeam([roll1, roll2, roll3], teamName, home11s);
+      let res = await APIService.createUsersWithTeam([email1, email2, email3], teamName, home11s);
       if (res.data.status !== 200) {
         setError(res.data.message);
         setTimeout(() => {
@@ -249,12 +249,12 @@ export function CreateTeam () {
           </Typography>
           }
           <div className={classes.formInputs}>
-            <TextField id="outlined-basic" label="Roll No 1"
-                       className={classes.name} onChange={(e)=>{setRoll1(e.target.value)}}/>
-            <TextField id="outlined-basic" label="Roll No 2"
-                       className={classes.name} onChange={(e)=>{setRoll2(e.target.value)}}/>
-            <TextField id="outlined-basic" label="Roll No 3"
-                       className={classes.name} onChange={(e)=>{setRoll3(e.target.value)}}/>
+            <TextField id="outlined-basic" label="Email 1"
+                       className={classes.name} onChange={(e)=>{setEmail1(e.target.value)}}/>
+            <TextField id="outlined-basic" label="Email 2"
+                       className={classes.name} onChange={(e)=>{setEmail2(e.target.value)}}/>
+            <TextField id="outlined-basic" label="Email 3"
+                       className={classes.name} onChange={(e)=>{setEmail3(e.target.value)}}/>
             <TextField id="outlined-basic" label="Team Name"
                        className={classes.name} onChange={(e)=>{setTeamName(e.target.value)}}/>
           </div>
