@@ -123,6 +123,7 @@ export function PickTeam (props) {
   const [users, setUsers] = useState([]);
   const [match, setMatch] = useState({});
   const [matchPlayers, setMatchPlayers] = useState([]);
+  const [starPlayer, setStarPlayer] = useState("");
 
   const fetchSquadPlayers = async () => {
     let res = await APIService.getPlayers(props.userData.squad);
@@ -155,6 +156,7 @@ export function PickTeam (props) {
       let squadIds = res.data.data;
       let cHome11 = [...home11s];
       let cSquad = [...squad];
+      setStarPlayer(res.data.starPlayer);
       for (let i=0;i<cSquad.length;i++) {
         if(squadIds.includes(cSquad[i]._id)){
           cSquad[i].selected = 1;
@@ -240,7 +242,17 @@ export function PickTeam (props) {
       } else  cSquad[i].selected = 0;
     }
     setSquad(cSquad);
-    console.log(home11s)
+  };
+
+  const selectStarPlayer = async (playerId) => {
+    if(home11s.includes(playerId))
+      setStarPlayer(playerId);
+    else {
+      setError("Player Not Selected for Match");
+      setTimeout(()=>{setError("")}, 5000);
+    }
+
+
   };
 
   const setPlayersForMatch = async () => {
@@ -254,7 +266,7 @@ export function PickTeam (props) {
       setTimeout(()=>{setError("")}, 5000);
       return;
     }
-    let res = await APIService.setPlayersForMatch(home11s, match._id);
+    let res = await APIService.setPlayersForMatch(home11s, match._id, starPlayer);
     if(res.data.status !== 200){
       setError(res.data.message);
       setTimeout(()=>{setError("")}, 5000);
@@ -340,6 +352,9 @@ export function PickTeam (props) {
                     {!props.userData.isAdmin &&
                     <StyledTableCell>Select Player</StyledTableCell>
                     }
+                    {!props.userData.isAdmin &&
+                    <StyledTableCell>Star Player</StyledTableCell>
+                    }
                   </StyledTableRow>
                 </TableHead>
                 <TableBody stripedRows>
@@ -358,6 +373,12 @@ export function PickTeam (props) {
                       <StyledTableCell align="center">
                         <Checkbox checked={player.selected}
                                   color="primary" onChange={() => selectHomePlayer(player._id)}/>
+                      </StyledTableCell>
+                      }
+                      {!props.userData.isAdmin &&
+                      <StyledTableCell align="center">
+                        <Checkbox checked={player._id === starPlayer}
+                                  color="primary" onChange={() => selectStarPlayer(player._id)}/>
                       </StyledTableCell>
                       }
                     </StyledTableRow>

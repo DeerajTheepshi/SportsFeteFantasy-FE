@@ -102,11 +102,12 @@ const APIService = {
             squad: squad,
         }))
     },
-    setPlayersForMatch : (selectedPlayers, matchId) => {
+    setPlayersForMatch : (selectedPlayers, matchId, starPlayer) => {
         return axios.default.post(config.BASE_URL + 'user/setPlayersForMatch', qs.stringify({
             session: localStorage.getItem("session"),
             selectedPlayers: selectedPlayers,
-            matchId: matchId
+            matchId: matchId,
+            starPlayer: starPlayer,
         }))
     },
     simulate : (matchId) => {
