@@ -205,7 +205,7 @@ function Login(props) {
                 value={passwordValue}
                 onChange={e => setPasswordValue(e.target.value)}
                 margin="normal"
-                placeholder="Password"
+                placeholder="Set New Password"
                 type="password"
                 fullWidth
               />
