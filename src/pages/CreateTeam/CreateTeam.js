@@ -259,10 +259,13 @@ export function CreateTeam () {
                        className={classes.name} onChange={(e)=>{setTeamName(e.target.value)}}/>
           </div>
           {success.length !== 0 &&
-          <Typography variant={'h6'} className={classes.success} >
+          <Typography variant={'h6'} className={classes.success}>
             {success}
           </Typography>
           }
+          <Typography variant={'h6'} className={classes.success} >
+            {`You have selected ${home11s.length} Players`}
+          </Typography>
           {isLoading && <div style={{width: "100%", height:"100%", display: "flex",
             justifyContent: "center", alignItems : "center"
           }}><Loader
