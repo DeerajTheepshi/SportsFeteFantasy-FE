@@ -297,7 +297,7 @@ export function CreateTeam () {
                       <MenuItem value={"SRH"}>SRH</MenuItem>
                       <MenuItem value={"DC"}>DC</MenuItem>
                       <MenuItem value={"RR"}>RR</MenuItem>
-                      <MenuItem value={"KXIP"}>KXIP</MenuItem>
+                      <MenuItem value={"PBKS"}>PBKS</MenuItem>
                     </Select>
                   </StyledTableCell>
                   <StyledTableCell>Select Player</StyledTableCell>

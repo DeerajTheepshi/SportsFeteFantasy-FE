@@ -240,7 +240,7 @@ export function AddMatch () {
               <MenuItem value={"SRH"}>SRH</MenuItem>
               <MenuItem value={"DC"}>DC</MenuItem>
               <MenuItem value={"RR"}>RR</MenuItem>
-              <MenuItem value={"KXIP"}>KXIP</MenuItem>
+              <MenuItem value={"PBKS"}>PBKS</MenuItem>
             </Select>
 
             <Typography variant={'h1'} className={classes.title}>
@@ -264,7 +264,7 @@ export function AddMatch () {
               <MenuItem value={"SRH"}>SRH</MenuItem>
               <MenuItem value={"DC"}>DC</MenuItem>
               <MenuItem value={"RR"}>RR</MenuItem>
-              <MenuItem value={"KXIP"}>KXIP</MenuItem>
+              <MenuItem value={"PBKS"}>PBKS</MenuItem>
             </Select>
           </div>
           {success.length !== 0 &&
