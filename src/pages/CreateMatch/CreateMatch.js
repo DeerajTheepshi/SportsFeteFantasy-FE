@@ -282,64 +282,64 @@ export function AddMatch () {
         </CardContent>
       </Card>
 
-      <br/><br/><br/>
-      <Card className={classes.table}>
-        <CardContent>
-          <div className={classes.teamsBox}>
-            <div className={classes.homeBox}>
-              <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                  <TableHead>
-                    <StyledTableRow>
-                      <StyledTableCell>Player Name</StyledTableCell>
-                      <StyledTableCell>Total Points</StyledTableCell>
-                    </StyledTableRow>
-                  </TableHead>
-                  <TableBody stripedRows>
-                    {homeSquad.map((player) => (
-                      <StyledTableRow key={player.name}>
-                        <StyledTableCell component="th" scope="row">
-                          {player.name}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          <Checkbox
-                            color="primary" onChange={()=>selectHomePlayer(player._id)}/>
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
+      {/*<br/><br/><br/>*/}
+      {/*<Card className={classes.table}>*/}
+        {/*<CardContent>*/}
+          {/*<div className={classes.teamsBox}>*/}
+            {/*<div className={classes.homeBox}>*/}
+              {/*<TableContainer component={Paper}>*/}
+                {/*<Table className={classes.table} aria-label="simple table">*/}
+                  {/*<TableHead>*/}
+                    {/*<StyledTableRow>*/}
+                      {/*<StyledTableCell>Player Name</StyledTableCell>*/}
+                      {/*<StyledTableCell>Total Points</StyledTableCell>*/}
+                    {/*</StyledTableRow>*/}
+                  {/*</TableHead>*/}
+                  {/*<TableBody stripedRows>*/}
+                    {/*{homeSquad.map((player) => (*/}
+                      {/*<StyledTableRow key={player.name}>*/}
+                        {/*<StyledTableCell component="th" scope="row">*/}
+                          {/*{player.name}*/}
+                        {/*</StyledTableCell>*/}
+                        {/*<StyledTableCell align="center">*/}
+                          {/*<Checkbox*/}
+                            {/*color="primary" onChange={()=>selectHomePlayer(player._id)}/>*/}
+                        {/*</StyledTableCell>*/}
+                      {/*</StyledTableRow>*/}
+                    {/*))}*/}
+                  {/*</TableBody>*/}
+                {/*</Table>*/}
+              {/*</TableContainer>*/}
+            {/*</div>*/}
 
-            <div className={classes.awayBox}>
-              <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                  <TableHead>
-                    <StyledTableRow>
-                      <StyledTableCell>Player Name</StyledTableCell>
-                      <StyledTableCell>Total Points</StyledTableCell>
-                    </StyledTableRow>
-                  </TableHead>
-                  <TableBody stripedRows>
-                    {awaySquad.map((player) => (
-                      <StyledTableRow key={player.name}>
-                        <StyledTableCell component="th" scope="row">
-                          {player.name}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          <Checkbox
-                            color="primary" onChange={()=>selectAwayPlayer(player._id)}/>
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            {/*<div className={classes.awayBox}>*/}
+              {/*<TableContainer component={Paper}>*/}
+                {/*<Table className={classes.table} aria-label="simple table">*/}
+                  {/*<TableHead>*/}
+                    {/*<StyledTableRow>*/}
+                      {/*<StyledTableCell>Player Name</StyledTableCell>*/}
+                      {/*<StyledTableCell>Total Points</StyledTableCell>*/}
+                    {/*</StyledTableRow>*/}
+                  {/*</TableHead>*/}
+                  {/*<TableBody stripedRows>*/}
+                    {/*{awaySquad.map((player) => (*/}
+                      {/*<StyledTableRow key={player.name}>*/}
+                        {/*<StyledTableCell component="th" scope="row">*/}
+                          {/*{player.name}*/}
+                        {/*</StyledTableCell>*/}
+                        {/*<StyledTableCell align="center">*/}
+                          {/*<Checkbox*/}
+                            {/*color="primary" onChange={()=>selectAwayPlayer(player._id)}/>*/}
+                        {/*</StyledTableCell>*/}
+                      {/*</StyledTableRow>*/}
+                    {/*))}*/}
+                  {/*</TableBody>*/}
+                {/*</Table>*/}
+              {/*</TableContainer>*/}
+            {/*</div>*/}
+          {/*</div>*/}
+        {/*</CardContent>*/}
+      {/*</Card>*/}
       <Button disabled={isLoading} onClick={handleCreateMatch} className={classes.button} variant={"contained"} color="primary">ADD</Button>
     </>
   )

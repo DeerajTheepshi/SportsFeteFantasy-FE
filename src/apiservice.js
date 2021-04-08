@@ -31,6 +31,12 @@ const APIService = {
             playerIds: playerIds
         }))
     },
+    getTeamPlayers: (teamName) => {
+        return axios.default.post(config.BASE_URL + 'player/getTeamPlayers', qs.stringify({
+            session: localStorage.getItem("session"),
+            teamName: teamName
+        }))
+    },
     getTeamSquad: (teamName) => {
         return axios.default.post(config.BASE_URL + 'player/getTeamSquad', qs.stringify({
             teamName: teamName,
@@ -71,12 +77,12 @@ const APIService = {
             ptsDetails: ptsDetails
         }))
     },
-    getMatchScores : (matchId, home11s, away11s) => {
+    getMatchScores : (matchId, homeTeam, awayTeam) => {
         return axios.default.post(config.BASE_URL + 'match/getMatchScorecard', qs.stringify({
             session: localStorage.getItem("session"),
             matchId: matchId,
-            home11s:home11s,
-            away11s: away11s
+            homeTeam:homeTeam,
+            awayTeam: awayTeam
         }))
     },
     getAllPlayers : () => {

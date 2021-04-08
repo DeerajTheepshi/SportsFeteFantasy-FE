@@ -18,6 +18,7 @@ import TableBody from "@material-ui/core/TableBody";
 import Paper from "@material-ui/core/Paper";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Checkbox from "@material-ui/core/Checkbox";
+import InputLabel from "@material-ui/core/InputLabel";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -121,6 +122,7 @@ export function PickTeam (props) {
   const [isLive, setIsLive] = useState(false);
   const [users, setUsers] = useState([]);
   const [match, setMatch] = useState({});
+  const [matchPlayers, setMatchPlayers] = useState([]);
 
   const fetchSquadPlayers = async () => {
     let res = await APIService.getPlayers(props.userData.squad);
@@ -159,6 +161,10 @@ export function PickTeam (props) {
           cHome11.push(cSquad[i]._id);
         } else  cSquad[i].selected = 0;
       }
+      let matchPlayersData = cSquad.filter((player) => {
+        return (player.teamName === match.homeTeam || player.teamName === match.awayTeam)
+      });
+      setMatchPlayers(matchPlayersData);
       setHome11s(cHome11);
       setSquad(cSquad);
     }). catch(e => {
@@ -263,6 +269,7 @@ export function PickTeam (props) {
     try {
       let user = users[key];
       let res = await APIService.getPlayers(user.squad);
+      setMatchPlayers(res.data.data);
       setSquad(res.data.data);
     } catch (e) {
       setError("Something went Wrong");
@@ -276,10 +283,9 @@ export function PickTeam (props) {
         <CardContent>
           <Typography variant={'h1'} className={classes.title}>
             {props.userData.isAdmin? "View Team" : "Pick Team"}<br/>
+            <Typography variant={'h5'}>{!props.userData.isAdmin?"Select Match":"Select User"}
             <Select
-              labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
-              label={!props.userData.isAdmin?"Select Match":"Select User"}
               className={classes.selector}
             >
               {!props.userData.isAdmin ?
@@ -300,6 +306,7 @@ export function PickTeam (props) {
               }
 
             </Select>
+            </Typography>
           </Typography>
 
           <br/>
@@ -336,7 +343,7 @@ export function PickTeam (props) {
                   </StyledTableRow>
                 </TableHead>
                 <TableBody stripedRows>
-                  {squad.map((player, key) => (
+                  {matchPlayers.map((player, key) => (
                     <StyledTableRow key={player.name}>
                       <StyledTableCell component="th" scope="row">
                         {key+1}

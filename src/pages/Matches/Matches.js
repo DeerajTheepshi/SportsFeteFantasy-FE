@@ -124,8 +124,8 @@ export function Matches ({userData}) {
   const [isAdmin, setIsAdmin] = useState(userData.isAdmin);
   const [home11Scores, setHome11Scores] = useState({});
   const [away11Scores, setAway11Scores] = useState({});
-  let homePts = [0,0,0,0,0,0,0,0,0,0,0];
-  let awayPts = [0,0,0,0,0,0,0,0,0,0,0];
+  let homePts = [];
+  let awayPts = [];
 
   const fetchMatches = async () => {
     let res = await APIService.getAllMatches();
@@ -191,7 +191,7 @@ export function Matches ({userData}) {
   const gotToScoring = async (match) => {
     setIsLoading(true);
     try {
-      let res = await APIService.getPlayers(match.homeEleven);
+      let res = await APIService.getTeamPlayers(match.homeTeam);
       if (res.data.status !== 200) {
         setError(res.data.message);
         setTimeout(() => {
@@ -201,8 +201,9 @@ export function Matches ({userData}) {
         return
       }
       setHome11s(res.data.data);
+      homePts = new Array(res.data.data.length).fill(0);
 
-      res = await APIService.getPlayers(match.awayEleven);
+      res = await APIService.getTeamPlayers(match.awayTeam);
       if (res.data.status !== 200) {
         setError(res.data.message);
         setTimeout(() => {
@@ -213,9 +214,11 @@ export function Matches ({userData}) {
       }
       setIsScoring(true);
       setAway11s(res.data.data);
+      awayPts = new Array(res.data.data.length).fill(0);
+
       setMatch(match);
 
-      res = await APIService.getMatchScores(match._id, match.homeEleven, match.awayEleven);
+      res = await APIService.getMatchScores(match._id, match.homeTeam, match.awayTeam);
       if (res.data.status !== 200) {
         setError(res.data.message);
         setTimeout(() => {
