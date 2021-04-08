@@ -294,13 +294,13 @@ export function CreateTeam () {
                       className={classes.selector}
                     >
                       <MenuItem value={"CSK"}>CSK</MenuItem>
-                      <MenuItem value={"RCB"}>RCB</MenuItem>
-                      <MenuItem value={"MI"}>MI</MenuItem>
-                      <MenuItem value={"KKR"}>KKR</MenuItem>
-                      <MenuItem value={"SRH"}>SRH</MenuItem>
                       <MenuItem value={"DC"}>DC</MenuItem>
-                      <MenuItem value={"RR"}>RR</MenuItem>
+                      <MenuItem value={"KKR"}>KKR</MenuItem>
+                      <MenuItem value={"MI"}>MI</MenuItem>
                       <MenuItem value={"PBKS"}>PBKS</MenuItem>
+                      <MenuItem value={"RR"}>RR</MenuItem>
+                      <MenuItem value={"RCB"}>RCB</MenuItem>
+                      <MenuItem value={"SRH"}>SRH</MenuItem>
                     </Select>
                   </StyledTableCell>
                   <StyledTableCell>Select Player</StyledTableCell>

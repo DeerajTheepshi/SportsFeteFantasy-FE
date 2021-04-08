@@ -119,20 +119,22 @@ export function PickTeam (props) {
   const [matches, setMatches] = useState([]);
   const [squad, setSquad] = useState([]);
   const [isLive, setIsLive] = useState(false);
+  const [users, setUsers] = useState([]);
   const [match, setMatch] = useState({});
 
   const fetchSquadPlayers = async () => {
-    let res = APIService.getPlayers(props.userData.squad);
+    let res = await APIService.getPlayers(props.userData.squad);
     return res;
   };
+
+  const fetchUsers = async () => {
+    let res = await APIService.getAllUsers(true);
+    return res;
+  };
+
 
   const fetchNotLiveMatches = async () => {
-    let res = APIService.getAllNotLiveMatches();
-    return res;
-  };
-
-  const fetchLiveStatus = async () => {
-    let res = await APIService.getLiveStatus();
+    let res = await APIService.getAllNotLiveMatches();
     return res;
   };
 
@@ -166,41 +168,51 @@ export function PickTeam (props) {
   }, [match]);
 
   useEffect(()=>{
-    fetchSquadPlayers().then(res => {
-      if(res.data.status !== 200) {
-        setError(res.data.message);
+    if(!props.userData.isAdmin) {
+      fetchSquadPlayers().then(res => {
+        if (res.data.status !== 200) {
+          setError(res.data.message);
+          setTimeout(() => {
+            setError("")
+          }, 5000);
+          return
+        }
+        let data = res.data.data;
+        for (let i = 0; i < data.length; i++) {
+          data[i].selected = 0;
+        }
+        setSquad(data);
+      }).catch(e => {
+        setError("Something Went Wrong");
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+      });
+
+      fetchNotLiveMatches().then((res) => {
+        if (res.data.status !== 200) {
+          setError(res.data.message);
+          return
+        }
+        setMatches(res.data.data);
+      }).catch(e => {
+        setError("Something Went Wrong");
+      });
+    } else {
+      fetchUsers().then(res => {
+        if(res.data.status !== 200) {
+          setError(res.data.message);
+          setTimeout(()=>{setError("")}, 5000);
+          return
+        }
+        let sortedUsers = res.data.data;
+        setUsers(sortedUsers);
+        setIsLoading(false);
+      }). catch(e => {
+        setError("Something Went Wrong");
         setTimeout(()=>{setError("")}, 5000);
-        return
-      }
-      let data = res.data.data;
-      for (let i=0;i<data.length;i++) {
-        data[i].selected = 0;
-      }
-      setSquad(data);
-    }). catch(e => {
-      setError("Something Went Wrong");
-      setTimeout(()=>{setError("")}, 5000);
-    });
-
-    fetchLiveStatus().then((res) => {
-      if (res.data.status !== 200) {
-        setError(res.data.message);
-        return
-      }
-      setIsLive(res.data.data);
-    }).catch(e=>{
-      setError("Something Went Wrong");
-    });
-
-    fetchNotLiveMatches().then((res) => {
-      if (res.data.status !== 200) {
-        setError(res.data.message);
-        return
-      }
-      setMatches(res.data.data);
-    }).catch(e=>{
-      setError("Something Went Wrong");
-    });
+      });
+    }
   },[]);
 
   const selectHomePlayer = async (playerId) => {
@@ -246,25 +258,46 @@ export function PickTeam (props) {
     setTimeout(()=>{setSuccess("")}, 5000);
   };
 
+  const setUser = async (key) => {
+    setIsLoading(true);
+    try {
+      let user = users[key];
+      let res = await APIService.getPlayers(user.squad);
+      setSquad(res.data.data);
+    } catch (e) {
+      setError("Something went Wrong");
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <Card className={classes.root}>
         <CardContent>
           <Typography variant={'h1'} className={classes.title}>
-            Pick Team <br/>
+            {props.userData.isAdmin? "View Team" : "Pick Team"}<br/>
             <Select
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
-              label="Select Match"
+              label={!props.userData.isAdmin?"Select Match":"Select User"}
               className={classes.selector}
             >
-              {matches.map((match, key) => {
-                return (
-                  <MenuItem value={match._id} onClick={() => setMatch(match)}>
-                    {match.matchNo + ". " + match.homeTeam + " vs " + match.awayTeam}
-                  </MenuItem>
-                )
-              })}
+              {!props.userData.isAdmin ?
+                matches.map((match, key) => {
+                  return (
+                    <MenuItem value={match._id} onClick={() => setMatch(match)}>
+                      {match.matchNo + ". " + match.homeTeam + " vs " + match.awayTeam}
+                    </MenuItem>
+                  )
+                }) :
+                users.map((user, key) => {
+                  return (
+                    <MenuItem value={key} onClick={() => setUser(key)}>
+                      {user.teamName}
+                    </MenuItem>
+                  )
+                })
+              }
 
             </Select>
           </Typography>
@@ -294,24 +327,32 @@ export function PickTeam (props) {
               <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                   <StyledTableRow>
+                    <StyledTableCell>No. </StyledTableCell>
                     <StyledTableCell>Player Name</StyledTableCell>
                     <StyledTableCell>Player Team</StyledTableCell>
+                    {!props.userData.isAdmin &&
                     <StyledTableCell>Select Player</StyledTableCell>
+                    }
                   </StyledTableRow>
                 </TableHead>
                 <TableBody stripedRows>
-                  {squad.map((player) => (
+                  {squad.map((player, key) => (
                     <StyledTableRow key={player.name}>
+                      <StyledTableCell component="th" scope="row">
+                        {key+1}
+                      </StyledTableCell>
                       <StyledTableCell component="th" scope="row">
                         {player.name}
                       </StyledTableCell>
                       <StyledTableCell component="th" scope="row">
                         {player.teamName}
                       </StyledTableCell>
+                      {!props.userData.isAdmin &&
                       <StyledTableCell align="center">
                         <Checkbox checked={player.selected}
                                   color="primary" onChange={() => selectHomePlayer(player._id)}/>
                       </StyledTableCell>
+                      }
                     </StyledTableRow>
                   ))}
                 </TableBody>
