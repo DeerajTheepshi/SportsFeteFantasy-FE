@@ -154,7 +154,7 @@ export function PickTeam (props) {
         return
       }
       let squadIds = res.data.data;
-      let cHome11 = [...home11s];
+      let cHome11 = [];
       let cSquad = [...squad];
       setStarPlayer(res.data.starPlayer);
       for (let i=0;i<cSquad.length;i++) {
@@ -245,6 +245,10 @@ export function PickTeam (props) {
   };
 
   const selectStarPlayer = async (playerId) => {
+    if(playerId === starPlayer){
+      setStarPlayer("");
+      return
+    }
     if(home11s.includes(playerId))
       setStarPlayer(playerId);
     else {
