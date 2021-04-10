@@ -224,6 +224,9 @@ export function PickTeam (props) {
   },[]);
 
   const selectHomePlayer = async (playerId) => {
+    if(starPlayer === playerId) {
+      setStarPlayer("");
+    }
     let home11Changed = [...home11s];
     if(home11Changed.includes(playerId)){
       home11Changed = home11Changed.filter((value) => {
