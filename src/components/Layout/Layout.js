@@ -48,6 +48,7 @@ function Layout(props) {
               <Route path="/app/Matches" render = {(props) =>  <Matches userData={userData}/>}/>
               <AdminRoute path="/app/AddTeam" component={CreateTeam}/>
               <Route path="/app/SetTeam" render={(props) => <PickTeam userData={userData}/>}/>
+              <Route path="/app/viewteam" render={(props) => <PickTeam userData={userData} viewSelectedTeam={true}/>}/>
               <Route path="/app/scoreboard" component={ScoreBoard}/>
             </Switch>
           </div>

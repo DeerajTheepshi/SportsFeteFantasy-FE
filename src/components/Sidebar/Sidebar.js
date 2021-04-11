@@ -9,7 +9,7 @@ import {
   QuestionAnswer as SupportIcon,
   LibraryBooks as LibraryIcon,
   HelpOutline as FAQIcon,
-  ArrowBack as ArrowBackIcon, Grade, SportsEsports, QueuePlayNext, Group, Eject, GroupAdd, MenuBook,
+  ArrowBack as ArrowBackIcon, Grade, SportsEsports, QueuePlayNext, Group, Eject, GroupAdd, MenuBook, Streetview,
 } from "@material-ui/icons";
 import { useTheme } from "@material-ui/styles";
 import { withRouter } from "react-router-dom";
@@ -36,6 +36,7 @@ const adminItems = [
   { id: 3, label: "Add User Team", link: "/app/AddTeam", icon: <Group /> },
   { id: 4, label: "Add Player", link: "/app/AddPlayer", icon: <Eject /> },
   { id: 5, label: "View Team", link: "/app/setteam", icon: <GroupAdd /> },
+  { id: 5, label: "Selected Team", link: "/app/viewteam", icon: <Streetview /> },
 ];
 
 const structure = [

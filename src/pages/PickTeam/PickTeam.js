@@ -141,38 +141,75 @@ export function PickTeam (props) {
     return res;
   };
 
+  const fetchAllMatches = async () => {
+    let res = await APIService.getAllMatches();
+    return res;
+  };
+
   const fetchAlreadyPicked = async () => {
     let res = await APIService.getPickedPlayersForMatch(match._id);
     return res;
   };
 
+  const fetchPickedPlayersForUser = async () => {
+    let res = await APIService.getPickedPlayersForMatchForUser(match._id, userId);
+    return res;
+  };
+
   useEffect(() => {
-    fetchAlreadyPicked().then(res => {
-      if(res.data.status !== 200) {
-        setError(res.data.message);
-        setTimeout(()=>{setError("")}, 5000);
-        return
-      }
-      let squadIds = res.data.data;
-      let cHome11 = [];
-      let cSquad = [...squad];
-      setStarPlayer(res.data.starPlayer);
-      for (let i=0;i<cSquad.length;i++) {
-        if(squadIds.includes(cSquad[i]._id)){
-          cSquad[i].selected = 1;
-          cHome11.push(cSquad[i]._id);
-        } else  cSquad[i].selected = 0;
-      }
-      let matchPlayersData = cSquad.filter((player) => {
-        return (player.teamName === match.homeTeam || player.teamName === match.awayTeam)
+    if(props.viewSelectedTeam && userId !== "" && match){
+      fetchPickedPlayersForUser().then(res => {
+        if (res.data.status !== 200) {
+          setError(res.data.message);
+          setTimeout(() => {
+            setError("")
+          }, 5000);
+          return
+        }
+        setMatchPlayers(res.data.data);
+        setStarPlayer(res.data.starPlayer);
+      }).catch(e => {
+        setError("Something Went Wrong");
+        setTimeout(() => {
+          setError("")
+        }, 5000);
       });
-      setMatchPlayers(matchPlayersData);
-      setHome11s(cHome11);
-      setSquad(cSquad);
-    }). catch(e => {
-      setError("Something Went Wrong");
-      setTimeout(()=>{setError("")}, 5000);
-    });
+    }
+  }, [userId, match]);
+
+  useEffect(() => {
+    if(!props.userData.isAdmin) {
+      fetchAlreadyPicked().then(res => {
+        if (res.data.status !== 200) {
+          setError(res.data.message);
+          setTimeout(() => {
+            setError("")
+          }, 5000);
+          return
+        }
+        let squadIds = res.data.data;
+        let cHome11 = [];
+        let cSquad = [...squad];
+        setStarPlayer(res.data.starPlayer);
+        for (let i = 0; i < cSquad.length; i++) {
+          if (squadIds.includes(cSquad[i]._id)) {
+            cSquad[i].selected = 1;
+            cHome11.push(cSquad[i]._id);
+          } else cSquad[i].selected = 0;
+        }
+        let matchPlayersData = cSquad.filter((player) => {
+          return (player.teamName === match.homeTeam || player.teamName === match.awayTeam)
+        });
+        setMatchPlayers(matchPlayersData);
+        setHome11s(cHome11);
+        setSquad(cSquad);
+      }).catch(e => {
+        setError("Something Went Wrong");
+        setTimeout(() => {
+          setError("")
+        }, 5000);
+      });
+    }
   }, [match]);
 
   useEffect(()=>{
@@ -206,7 +243,7 @@ export function PickTeam (props) {
       }).catch(e => {
         setError("Something Went Wrong");
       });
-    } else {
+    } else if (!props.viewSelectedTeam) {
       fetchUsers().then(res => {
         if(res.data.status !== 200) {
           setError(res.data.message);
@@ -220,6 +257,34 @@ export function PickTeam (props) {
         setError("Something Went Wrong");
         setTimeout(()=>{setError("")}, 5000);
       });
+    } else {
+      fetchAllMatches().then((res) => {
+        if (res.data.status !== 200) {
+          setError(res.data.message);
+          setIsLoading(false);
+          return
+        }
+        setMatches(res.data.matches);
+      }).catch(e=>{
+        setError("Something Went Wrong");
+        setIsLoading(false);
+      });
+
+      fetchUsers().then(res => {
+        if(res.data.status !== 200) {
+          setError(res.data.message);
+          setTimeout(()=>{setError("")}, 5000);
+          return
+        }
+        let sortedUsers = res.data.data;
+        setUsers(sortedUsers);
+        setIsLoading(false);
+      }). catch(e => {
+        setError("Something Went Wrong");
+        setTimeout(()=>{setError("")}, 5000);
+      });
+
+      setIsLoading(false);
     }
   },[]);
 
@@ -302,29 +367,48 @@ export function PickTeam (props) {
         <CardContent>
           <Typography variant={'h1'} className={classes.title}>
             {props.userData.isAdmin? "View Team" : "Pick Team"}<br/>
-            <Typography variant={'h5'}>{!props.userData.isAdmin?"Select Match":"Select User"}
-            <Select
-              id="demo-simple-select-outlined"
-              className={classes.selector}
-            >
-              {!props.userData.isAdmin ?
-                matches.map((match, key) => {
-                  return (
-                    <MenuItem value={match._id} onClick={() => setMatch(match)}>
-                      {match.matchNo + ". " + match.homeTeam + " vs " + match.awayTeam}
-                    </MenuItem>
-                  )
-                }) :
-                users.map((user, key) => {
-                  return (
-                    <MenuItem value={key} onClick={() => setUser(key)}>
-                      {user.teamName}
-                    </MenuItem>
-                  )
-                })
-              }
+            <Typography variant={'h5'}>{(props.viewSelectedTeam || !props.userData.isAdmin)?"Select Match":"Select User"}
+              <Select
+                id="demo-simple-select-outlined"
+                className={classes.selector}
+              >
+                {(props.viewSelectedTeam || !props.userData.isAdmin) ?
+                  matches.map((match, key) => {
+                    return (
+                      props.viewSelectedTeam ?
+                        <MenuItem value={match.match._id} onClick={() => setMatch(match.match)}>
+                          {match.match.matchNo + ". " + match.match.homeTeam + " vs " + match.match.awayTeam}
+                        </MenuItem> :
+                        <MenuItem value={match._id} onClick={() => setMatch(match)}>
+                          {match.matchNo + ". " + match.homeTeam + " vs " + match.awayTeam}
+                        </MenuItem>
 
-            </Select>
+                    )
+                  }) :
+                  users.map((user, key) => {
+                    return (
+                      <MenuItem value={key} onClick={() => setUser(key)}>
+                        {user.teamName}
+                      </MenuItem>
+                    )
+                  })
+                }
+
+              </Select>
+              {props.viewSelectedTeam &&
+              <Select
+                id="demo-simple-select-outlined"
+                className={classes.selector}
+              >
+                {users.map((user,key) => {
+                  return (
+                    <MenuItem value={key} onClick={() => setUserId(user._id)}>
+                      {user.email}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+              }
             </Typography>
           </Typography>
 
@@ -371,7 +455,11 @@ export function PickTeam (props) {
                         {key+1}
                       </StyledTableCell>
                       <StyledTableCell component="th" scope="row">
-                        {player.name}
+                        {(props.viewSelectedTeam && player._id === starPlayer)?
+                          <b>{player.name}</b>
+                          :
+                          player.name
+                        }
                       </StyledTableCell>
                       <StyledTableCell component="th" scope="row">
                         {player.teamName}
@@ -379,13 +467,21 @@ export function PickTeam (props) {
                       {!props.userData.isAdmin &&
                       <StyledTableCell align="center">
                         <Checkbox checked={player.selected}
-                                  color="primary" onChange={() => selectHomePlayer(player._id)}/>
+                                  color="primary" onChange={() => {
+                                    selectHomePlayer(player._id);
+                                    setSuccess("");
+                                    setError("");
+                        }}/>
                       </StyledTableCell>
                       }
                       {!props.userData.isAdmin &&
                       <StyledTableCell align="center">
                         <Checkbox checked={player._id === starPlayer}
-                                  color="primary" onChange={() => selectStarPlayer(player._id)}/>
+                                  color="primary" onChange={() => {
+                                    selectStarPlayer(player._id);
+                                    setSuccess("");
+                                    setError("");
+                        }}/>
                       </StyledTableCell>
                       }
                     </StyledTableRow>

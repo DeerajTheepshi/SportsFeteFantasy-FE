@@ -145,7 +145,15 @@ const APIService = {
             session: localStorage.getItem("session"),
             matchId: matchId
         }))
+    },
+    getPickedPlayersForMatchForUser : (matchId, userId) => {
+        return axios.default.post(config.BASE_URL + 'user/getSquadForUserMatch', qs.stringify({
+            session: localStorage.getItem("session"),
+            matchId: matchId,
+            userId: userId,
+        }))
     }
+
 };
 
 export default APIService;
