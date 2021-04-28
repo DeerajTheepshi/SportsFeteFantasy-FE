@@ -122,6 +122,7 @@ export function ScoreBoard (props) {
   const [userId, setUserId] = useState("");
   const [matches, setMatches] = useState([]);
   const [users, setUsers] = useState([]);
+  const [position, setPosition] = useState(-1);
 
   const compare = ( a, b ) => {
     if ( a.points > b.points ){
@@ -135,6 +136,11 @@ export function ScoreBoard (props) {
     return res;
   };
 
+  const fetchPosition = async () => {
+    let res = APIService.getPosition();
+    return res;
+  };
+
   useEffect(()=>{
     fetchUsers().then(res => {
       if(res.data.status !== 200) {
@@ -144,12 +150,28 @@ export function ScoreBoard (props) {
       }
       let sortedUsers = res.data.data.sort(compare);
       setUsers(sortedUsers);
+    }). catch(e => {
+      setError("Something Went Wrong");
+      setTimeout(()=>{setError("")}, 5000);
+    });
+
+    fetchPosition().then(res => {
+      if(res.data.status !== 200) {
+        setError(res.data.message);
+        setTimeout(()=>{setError("")}, 5000);
+        return
+      }
+      setPosition(res.data.data);
       setIsLoading(false);
     }). catch(e => {
       setError("Something Went Wrong");
       setTimeout(()=>{setError("")}, 5000);
     });
+
+    setIsLoading(false);
+
   },[]);
+
 
   return (
     <>
@@ -177,6 +199,11 @@ export function ScoreBoard (props) {
             {success.length !== 0 &&
             <Typography variant={'h6'} className={classes.success}>
               {success}
+            </Typography>
+            }
+            {position !== -1 &&
+            <Typography variant={'h6'} className={classes.success}>
+              Your Position : {position}
             </Typography>
             }
           </CardContent>

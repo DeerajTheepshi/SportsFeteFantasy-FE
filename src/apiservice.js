@@ -152,6 +152,11 @@ const APIService = {
             matchId: matchId,
             userId: userId,
         }))
+    },
+    getPosition : () => {
+        return axios.default.post(config.BASE_URL + 'user/getPosition', qs.stringify({
+            session: localStorage.getItem("session"),
+        }))
     }
 
 };
